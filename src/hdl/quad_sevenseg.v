@@ -20,10 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module dual_sevenseg(
+module quad_sevenseg(
     input clk,
-    input wire [3:0] tens,
-    input wire [3:0] ones,
+    input wire [3:0] digit0,
+    input wire [3:0] digit1,
+    input wire [3:0] digit2,
+    input wire [3:0] digit3,
     output [6:0] cathodes,
     output [7:0] anodes
     );
@@ -32,31 +34,42 @@ module dual_sevenseg(
 reg [3:0] display_digit;
 wire [3:0] bcd_in;
 assign bcd_in = display_digit;
-bcdto7segment disp0(
+
+bcdto7segment display_decoder(
     .bcd_in (bcd_in),
     .seg (cathodes)
 );
 
 // anode FSM
 // state definition
-parameter lsd = 8'b1;
-parameter msd = 8'b10;
+parameter d0 = 8'b1;
+parameter d1 = 8'b10;
+parameter d2 = 8'b100;
+parameter d3 = 8'b1000;
 
 // next state logic, encoded like anodes
 reg [7:0] next_state;
-reg [7:0] state = lsd;
+reg [7:0] state = d0;
 
 // next state logic
-always @(state, ones, tens) begin
+always @(state, digit0, digit1, digit2, digit3) begin
     case (state)
     // we just want to switch between digits
-        lsd: begin
-            next_state <= msd;
-            display_digit <= ones;
+        d0: begin
+            next_state <= d1;
+            display_digit <= digit0;
         end
-        msd: begin
-            next_state <= lsd;
-            display_digit <= tens; // actual mux
+        d1: begin
+            next_state <= d2;
+            display_digit <= digit1;
+        end        
+        d2: begin
+            next_state <= d3;
+            display_digit <= digit2;
+        end        
+        d3: begin
+            next_state <= d0;
+            display_digit <= digit3;
         end
         default: begin
             next_state <= 0; // trap broken state
