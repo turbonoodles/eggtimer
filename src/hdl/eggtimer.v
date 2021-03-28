@@ -26,6 +26,8 @@ module eggtimer(
     input wire clk_100MHz,
     output wire [6:0] display_cathodes,
     output wire [7:0] display_anodes,
+    output wire timer_enabled_led,
+    output wire timer_on_led
     );
 
 // generate pulses every 1s for synchronous counters
@@ -48,7 +50,44 @@ clock_divider timer_2ms(
     .pulse (pulse_2ms)
 );
 
+// timer on LED; flashes at 1s rate
+reg flash;
+always @()
 
+wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
+time_count time_ctr(
+    .clk (clk_5MHz),
+    .reset (reset),
+    // cook time settings
+    .seconds_prog ( seconds_prog ),
+    .tens_seconds_prog ( tens_seconds_prog ),
+    .minutes_prog ( minutes_prog ), 
+    .tens_minutes_prog ( tens_minutes_prog ),
+    // timer outputs
+    .seconds ( seconds_count ),
+    .tens_seconds ( tens_seconds_count ),
+    .minutes ( minutes_count ),
+    .tens_minutes ( tens_minutes_count )
+);
+
+// display mux
+// display_prog will be high if we are displaying the set time
+assign seconds = display_prog? seconds_prog:seconds_count;
+assign tens_seconds = display_prog? tens_seconds_prog:tens_seconds_count;
+assign minutes = display_prog? minutes_prog:minutes_count;
+assign tens_minutes = display_prog? tens_minutes_prog:tens_minutes_count;
+
+// display instantiation
+quad_sevenseg display(
+    .clk (clk_5MHz),
+    .clk (pulse_2ms),
+    .digit0 ( seconds ),
+    .digit1 ( tens_seconds ),
+    .digit2 ( minutes ),
+    .digit3 ( tens_minutes ),
+    .cathodes ( display_cathodes ),
+    .anodes ( display_anodes )
+);
 
 
 endmodule
