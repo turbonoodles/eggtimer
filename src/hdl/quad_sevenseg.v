@@ -22,6 +22,7 @@
 
 module quad_sevenseg(
     input clk,
+    input clk_enable,
     input wire [3:0] digit0,
     input wire [3:0] digit1,
     input wire [3:0] digit2,
@@ -81,7 +82,7 @@ end
 // change state machine at 500Hz
 always @(posedge clk) begin
     // advance the state machine
-    state <= next_state;
+    if (clk_enable) state <= next_state;
 end
 
 // output decoding from state machine
