@@ -30,6 +30,16 @@ module eggtimer(
     output wire timer_on_led
     );
 
+// MMCM instance to generate a 5MHz clock
+clk_gen_5MHz merlin(
+    // Clock out ports
+    .clk_out1(clk_5MHz),     // output clk_out1
+    // Status and control signals
+    .locked(locked),       // output locked
+   // Clock in ports
+    .clk_in1(clk_in1)
+);      // input clk_in1
+
 // generate pulses every 1s for synchronous counters
 wire pulse_1s;
 defparam timer_1s.MAX_COUNT = 5000000;
