@@ -60,9 +60,6 @@ clock_divider timer_2ms(
     .pulse (pulse_2ms)
 );
 
-// timer on LED; flashes at 1s rate
-reg flash;
-always @()
 
 wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
 time_count time_ctr(
