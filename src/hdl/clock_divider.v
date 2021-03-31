@@ -31,7 +31,7 @@ parameter CTR_WIDTH = 24;
 
 reg [CTR_WIDTH-1:0] count;
 
-always @( posedge clk ) begin
+always @( negedge clk, posedge reset ) begin
 
     if ( reset ) count <= MAX_COUNT;
     
