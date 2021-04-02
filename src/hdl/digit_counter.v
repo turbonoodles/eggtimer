@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module downcounter(
+module digit_counter(
     input wire clk,
     input wire reset,
     input wire [WIDTH-1:0] start_count,

@@ -41,7 +41,7 @@ module time_count(
 wire seconds_enable, seconds_zero;
 assign seconds_enable = count_enable & main_enable;
 defparam seconds_ctr.MAX = 9;
-downcounter seconds_ctr(
+digit_counter seconds_ctr(
     .clk ( clk ),
     .enable ( seconds_enable ),
     .reset (reset),
@@ -53,7 +53,7 @@ downcounter seconds_ctr(
 wire tens_seconds_enable, tens_seconds_zero;
 assign tens_seconds_enable = count_enable & seconds_zero & main_enable;
 defparam tens_seconds_ctr.MAX = 5;
-downcounter tens_seconds_ctr(
+digit_counter tens_seconds_ctr(
     .clk ( clk ),
     .enable ( tens_seconds_enable ),
     .reset (reset),
@@ -65,7 +65,7 @@ downcounter tens_seconds_ctr(
 wire minutes_enable, minutes_zero;
 assign minutes_enable = count_enable & seconds_zero & tens_seconds_zero & main_enable;
 defparam minutes_ctr.MAX = 9;
-downcounter minutes_ctr(
+digit_counter minutes_ctr(
     .clk ( clk ),
     .enable ( minutes_enable ),
     .reset (reset),
@@ -76,7 +76,7 @@ downcounter minutes_ctr(
 
 wire tens_minutes_enable, tens_minutes_zero;
 assign tens_minutes_enable = count_enable & seconds_zero & tens_seconds_zero & minutes_zero & main_enable;
-downcounter tens_minutes_ctr(
+digit_counter tens_minutes_ctr(
     .clk ( clk ),
     .enable ( tens_minutes_enable ),
     .reset ( reset ),
