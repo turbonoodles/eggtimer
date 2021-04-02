@@ -45,8 +45,8 @@ wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
 time_count time_ctr(
     .clk (clk_10Hz),
     .reset (reset),
-    .pulse_1s (pulse_1s),
-    .timer_on ( timer_on ),
+    .count_enable (pulse_1s),
+    .main_enable ( timer_on ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),

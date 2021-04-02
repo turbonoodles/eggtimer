@@ -22,8 +22,8 @@
 
 module time_count(
     input wire clk,
-    input wire pulse_1s,
-    input wire timer_on,
+    input wire count_enable,
+    input wire main_enable,
     input wire reset,
     // cook time input
     input wire [3:0] seconds_prog,
@@ -39,7 +39,7 @@ module time_count(
 
 // main counters
 wire seconds_enable, seconds_zero;
-assign seconds_enable = pulse_1s & timer_on;
+assign seconds_enable = count_enable & main_enable;
 defparam seconds_ctr.MAX = 9;
 downcounter seconds_ctr(
     .clk ( clk ),
@@ -51,7 +51,7 @@ downcounter seconds_ctr(
 );
 
 wire tens_seconds_enable, tens_seconds_zero;
-assign tens_seconds_enable = pulse_1s & seconds_zero & timer_on;
+assign tens_seconds_enable = count_enable & seconds_zero & main_enable;
 defparam tens_seconds_ctr.MAX = 5;
 downcounter tens_seconds_ctr(
     .clk ( clk ),
@@ -63,7 +63,7 @@ downcounter tens_seconds_ctr(
 );
 
 wire minutes_enable, minutes_zero;
-assign minutes_enable = pulse_1s & seconds_zero & tens_seconds_zero & timer_on;
+assign minutes_enable = count_enable & seconds_zero & tens_seconds_zero & main_enable;
 defparam minutes_ctr.MAX = 9;
 downcounter minutes_ctr(
     .clk ( clk ),
@@ -75,7 +75,7 @@ downcounter minutes_ctr(
 );
 
 wire tens_minutes_enable, tens_minutes_zero;
-assign tens_minutes_enable = pulse_1s & seconds_zero & tens_seconds_zero & minutes_zero & timer_on;
+assign tens_minutes_enable = count_enable & seconds_zero & tens_seconds_zero & minutes_zero & main_enable;
 downcounter tens_minutes_ctr(
     .clk ( clk ),
     .enable ( tens_minutes_enable ),

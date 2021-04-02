@@ -22,7 +22,11 @@
 
 module eggtimer(
     input wire timer_on,
-    input wire reset,
+    input wire reset, // no need to debounce reset
+    input wire cooktime_btn,
+    input wire start_btn,
+    input wire minutes_btn,
+    input wire seconds_btn,
     input wire clk_100MHz,
     output wire [6:0] display_cathodes,
     output wire [7:0] display_anodes,
@@ -37,12 +41,12 @@ clk_gen_5MHz merlin(
     // Status and control signals
     .locked(locked),       // output locked
    // Clock in ports
-    .clk_in1(clk_in1)
+    .clk_in1(clk_100MHz)
 );      // input clk_in1
 
 // generate pulses every 1s for synchronous counters
 wire pulse_1s;
-defparam timer_1s.MAX_COUNT = 5000000;
+defparam timer_1s.MAX_COUNT = 4999999; // accuracy matters here
 defparam timer_1s.CTR_WIDTH = 23; // need 23b to hold 5 000 000
 clock_divider timer_1s(
     .clk (clk_5MHz),
@@ -60,11 +64,52 @@ clock_divider timer_2ms(
     .pulse (pulse_2ms)
 );
 
-
-wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
-time_count time_ctr(
+// pulse every 10ms - clock enable signal for debouncers
+wire pulse_10ms;
+defparam timer_10ms.MAX_COUNT = 10000;
+defparam timer_10ms.CTR_WIDTH = 14; // 2^14 = 16 384
+clock_divider timer_2ms(
     .clk (clk_5MHz),
     .reset (reset),
+    .pulse (pulse_2ms)
+);
+
+// this is a debouncer but it's really handling the delay to switch into
+// the cook-time setting mode
+wire cooktime_dbnce; // request to enter cook time mode
+defparam cooktime_debouncer.BOUNCE_DELAY = 3; // three second delay
+debouncer cooktime_debouncer(
+    .clk ( clk_5MHz ),
+    .enable ( pulse_1s ),
+    .button ( cooktime_btn ),
+    .reset ( reset ),
+    .out ( cooktime_dbnce )
+);
+
+wire minutes_dbnce;
+debouncer minutes_debouncer(
+    .clk ( clk_5MHz ),
+    .enable ( pulse_10ms ),
+    .button ( minutes_btn ),
+    .reset ( reset ),
+    .out ( minutes_dbnce )
+);
+
+wire seconds_dbnce;
+debouncer seconds_debouncer(
+    .clk ( clk_5MHz ),
+    .enable ( pulse_10ms ),
+    .button ( seconds_btn ),
+    .reset ( reset ),
+    .out ( seconds_dbnce )
+);
+
+wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
+time_count main_timer(
+    .clk (clk_5MHz),
+    .reset (reset),
+    .count_enable ( pulse_1s ),
+    .main_enable ( timer_on ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),
@@ -95,6 +140,5 @@ quad_sevenseg display(
     .cathodes ( display_cathodes ),
     .anodes ( display_anodes )
 );
-
 
 endmodule
