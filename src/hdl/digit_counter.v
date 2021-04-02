@@ -25,11 +25,11 @@ module digit_counter(
     input wire reset,
     input wire [WIDTH-1:0] start_count,
     input wire enable,
-    input wire direction, // count up (1) or down (0)
     output reg [WIDTH-1:0] count, // always a single hex/BCD digit
     output wire zero_count
     );
     
+parameter DIRECTION = 1'b0; // count up (1) or down (0)
 parameter WIDTH = 4;
 parameter MAX = 9;
 assign zero_count = ( count == 0 );
@@ -41,7 +41,7 @@ always @(posedge clk, posedge reset) begin
 
         if (enable) begin // yes we want to do things
 
-            if ( ~direction ) begin // direction == 0, count down
+            if ( ~DIRECTION ) begin // direction == 0, count down
                 if (count == 0) count <= MAX;
                 else count <= count - 1;
             end // ~direction

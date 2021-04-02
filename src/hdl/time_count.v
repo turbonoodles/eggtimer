@@ -25,7 +25,6 @@ module time_count(
     input wire count_enable,
     input wire main_enable,
     input wire reset,
-    input wire direction,
     // cook time input
     input wire [3:0] seconds_prog,
     input wire [3:0] tens_seconds_prog,
@@ -38,15 +37,17 @@ module time_count(
     output wire [3:0] tens_minutes
     );
 
+parameter TIMER_DIRECTION = 1'b0;
+
 // main counters
 wire seconds_enable, seconds_zero;
 assign seconds_enable = count_enable & main_enable;
 defparam seconds_ctr.MAX = 9;
+defparam seconds_ctr.DIRECTION = TIMER_DIRECTION; // countdown
 digit_counter seconds_ctr(
     .clk ( clk ),
     .enable ( seconds_enable ),
     .reset (reset),
-    .direction ( direction ),
     .start_count ( seconds_prog ),
     .count ( seconds ),
     .zero_count ( seconds_zero )
@@ -55,11 +56,11 @@ digit_counter seconds_ctr(
 wire tens_seconds_enable, tens_seconds_zero;
 assign tens_seconds_enable = count_enable & seconds_zero & main_enable;
 defparam tens_seconds_ctr.MAX = 5;
+defparam tens_seconds_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter tens_seconds_ctr(
     .clk ( clk ),
     .enable ( tens_seconds_enable ),
     .reset (reset),
-    .direction ( direction ),
     .start_count ( tens_seconds_prog ),
     .count ( tens_seconds ),
     .zero_count ( tens_seconds_zero )
@@ -68,11 +69,11 @@ digit_counter tens_seconds_ctr(
 wire minutes_enable, minutes_zero;
 assign minutes_enable = count_enable & seconds_zero & tens_seconds_zero & main_enable;
 defparam minutes_ctr.MAX = 9;
+defparam minutes_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter minutes_ctr(
     .clk ( clk ),
     .enable ( minutes_enable ),
     .reset (reset),
-    .direction ( direction ),
     .start_count ( minutes_prog ),
     .count ( minutes ),
     .zero_count ( minutes_zero )
@@ -80,11 +81,11 @@ digit_counter minutes_ctr(
 
 wire tens_minutes_enable, tens_minutes_zero;
 assign tens_minutes_enable = count_enable & seconds_zero & tens_seconds_zero & minutes_zero & main_enable;
+defparam tens_minutes_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter tens_minutes_ctr(
     .clk ( clk ),
     .enable ( tens_minutes_enable ),
     .reset ( reset ),
-    .direction ( direction ),
     .start_count ( tens_minutes_prog ),
     .count ( tens_minutes ),
     .zero_count ( tens_minutes_zero )

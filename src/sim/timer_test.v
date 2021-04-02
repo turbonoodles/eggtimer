@@ -48,7 +48,6 @@ time_count time_ctr(
     .reset (reset),
     .count_enable (pulse_1s),
     .main_enable ( timer_on ),
-    .direction ( direction ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),
