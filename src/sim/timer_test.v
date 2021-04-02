@@ -26,6 +26,7 @@ reg clk_10Hz;
 reg reset;
 reg timer_on;
 reg direction;
+reg load;
 
 reg [3:0] seconds_prog = 4;
 reg [3:0] tens_seconds_prog = 3;
@@ -48,6 +49,7 @@ time_count time_ctr(
     .reset (reset),
     .count_enable (pulse_1s),
     .main_enable ( timer_on ),
+    .load ( load ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),
@@ -66,6 +68,7 @@ initial begin
     clk_10Hz = 0;
     reset = 0;
     direction = 0;
+    load = 0;
     #5;
     reset = 1;
     #5;
@@ -74,6 +77,10 @@ initial begin
 
     #100000000;
     direction = 1;
+    #100000000;
+    load = 1;
+    #200000;
+    load = 0;
     #100000000;
     $finish;
 end

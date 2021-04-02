@@ -25,6 +25,7 @@ module time_count(
     input wire count_enable,
     input wire main_enable,
     input wire reset,
+    input wire load,
     // cook time input
     input wire [3:0] seconds_prog,
     input wire [3:0] tens_seconds_prog,
@@ -47,10 +48,11 @@ defparam seconds_ctr.DIRECTION = TIMER_DIRECTION; // countdown
 digit_counter seconds_ctr(
     .clk ( clk ),
     .enable ( seconds_enable ),
+    .load ( load ),
     .reset (reset),
     .start_count ( seconds_prog ),
     .count ( seconds ),
-    .zero_count ( seconds_zero )
+    .term_count ( seconds_zero )
 );
 
 wire tens_seconds_enable, tens_seconds_zero;
@@ -60,10 +62,11 @@ defparam tens_seconds_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter tens_seconds_ctr(
     .clk ( clk ),
     .enable ( tens_seconds_enable ),
+    .load ( load ),
     .reset (reset),
     .start_count ( tens_seconds_prog ),
     .count ( tens_seconds ),
-    .zero_count ( tens_seconds_zero )
+    .term_count ( tens_seconds_zero )
 );
 
 wire minutes_enable, minutes_zero;
@@ -73,10 +76,11 @@ defparam minutes_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter minutes_ctr(
     .clk ( clk ),
     .enable ( minutes_enable ),
+    .load ( load ),
     .reset (reset),
     .start_count ( minutes_prog ),
     .count ( minutes ),
-    .zero_count ( minutes_zero )
+    .term_count ( minutes_zero )
 );
 
 wire tens_minutes_enable, tens_minutes_zero;
@@ -85,10 +89,11 @@ defparam tens_minutes_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter tens_minutes_ctr(
     .clk ( clk ),
     .enable ( tens_minutes_enable ),
+    .load ( load ),
     .reset ( reset ),
     .start_count ( tens_minutes_prog ),
     .count ( tens_minutes ),
-    .zero_count ( tens_minutes_zero )
+    .term_count ( tens_minutes_zero )
 );
 
 endmodule
