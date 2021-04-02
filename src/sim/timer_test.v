@@ -25,6 +25,7 @@ module timer_test();
 reg clk_10Hz;
 reg reset;
 reg timer_on;
+reg direction;
 
 reg [3:0] seconds_prog = 4;
 reg [3:0] tens_seconds_prog = 3;
@@ -47,6 +48,7 @@ time_count time_ctr(
     .reset (reset),
     .count_enable (pulse_1s),
     .main_enable ( timer_on ),
+    .direction ( direction ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),
@@ -64,12 +66,15 @@ time_count time_ctr(
 initial begin
     clk_10Hz = 0;
     reset = 0;
+    direction = 0;
     #5;
     reset = 1;
     #5;
     reset = 0;
     timer_on = 1;
 
+    #100000000;
+    direction = 1;
     #100000000;
     $finish;
 end

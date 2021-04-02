@@ -25,6 +25,7 @@ module time_count(
     input wire count_enable,
     input wire main_enable,
     input wire reset,
+    input wire direction,
     // cook time input
     input wire [3:0] seconds_prog,
     input wire [3:0] tens_seconds_prog,
@@ -45,6 +46,7 @@ digit_counter seconds_ctr(
     .clk ( clk ),
     .enable ( seconds_enable ),
     .reset (reset),
+    .direction ( direction ),
     .start_count ( seconds_prog ),
     .count ( seconds ),
     .zero_count ( seconds_zero )
@@ -57,6 +59,7 @@ digit_counter tens_seconds_ctr(
     .clk ( clk ),
     .enable ( tens_seconds_enable ),
     .reset (reset),
+    .direction ( direction ),
     .start_count ( tens_seconds_prog ),
     .count ( tens_seconds ),
     .zero_count ( tens_seconds_zero )
@@ -69,6 +72,7 @@ digit_counter minutes_ctr(
     .clk ( clk ),
     .enable ( minutes_enable ),
     .reset (reset),
+    .direction ( direction ),
     .start_count ( minutes_prog ),
     .count ( minutes ),
     .zero_count ( minutes_zero )
@@ -80,6 +84,7 @@ digit_counter tens_minutes_ctr(
     .clk ( clk ),
     .enable ( tens_minutes_enable ),
     .reset ( reset ),
+    .direction ( direction ),
     .start_count ( tens_minutes_prog ),
     .count ( tens_minutes ),
     .zero_count ( tens_minutes_zero )

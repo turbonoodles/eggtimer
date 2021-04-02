@@ -25,6 +25,7 @@ module downcounter_tb();
 reg clk_10Hz;
 reg [3:0] seconds_prog = 9;
 reg reset;
+reg direction;
 
 wire[3:0] seconds;
 
@@ -39,10 +40,11 @@ clock_divider timer_1s(
 
 defparam seconds_ctr.WIDTH = 4;
 defparam seconds_ctr.MAX = 9;
-downcounter seconds_ctr(
+digit_counter seconds_ctr(
     .clk ( clk_10Hz ),
     .enable ( pulse_1s ),
     .reset (reset),
+    .direction ( direction ),
     .start_count ( seconds_prog ),
     .count ( seconds ),
     .zero_count ( seconds_zero )
@@ -50,6 +52,7 @@ downcounter seconds_ctr(
 
 initial begin
     clk_10Hz = 0;
+    direction = 0;
     reset = 0;
     #5;
     reset = 1;
@@ -60,6 +63,8 @@ initial begin
     reset = 1;
     #10;
     reset = 0;
+    #5000000;
+    direction = 1;
     #5000000;
     $finish;
 end
