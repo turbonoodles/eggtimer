@@ -23,11 +23,18 @@
 module debouncer(
     input wire button,
     input wire clk,
+    input wire enable,
     input wire reset,
     output wire out
     );
 
-reg [63:0] bouncer; // updates every 5M/64 = 13us?
+// this parameter will decide how long our button needs to be constant
+// in order to generate an output
+// BOUNCE_DELAY = 2 is a standard debouncer; raise BOUNCE_DELAY to 
+// force the button to be held for a period of time
+parameter BOUNCE_DELAY = 2; 
+
+reg [BOUNCE_DELAY - 1:0] bouncer;
 
 // basically a shift register where we want to take a poll of the outputs
 always @( posedge clk, posedge reset ) begin
@@ -35,13 +42,14 @@ always @( posedge clk, posedge reset ) begin
     if ( reset ) bouncer <= 0; // clear everyone
     else begin
         
-        bouncer <= { bouncer[62:0], button };
+        if ( enable ) bouncer <= { bouncer[BOUNCE_DELAY-1:1], button };
 
     end
     
 end
 
-// only go high if we've got 64-in-a-row solid 1s
+// only go high if we've got agreement
+// for an active-high button, that means everyone's 1
 assign out = &bouncer;
 
 endmodule
