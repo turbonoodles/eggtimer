@@ -23,6 +23,7 @@
 module digit_counter(
     input wire clk,
     input wire reset,
+    input wire load,
     input wire [WIDTH-1:0] start_count,
     input wire enable,
     output reg [WIDTH-1:0] count, // always a single hex/BCD digit
@@ -36,26 +37,35 @@ assign term_count = DIRECTION? ( count == MAX ):( count == 0 );
 
 always @(posedge clk, posedge reset) begin
     
+    // asynchronous reset
     if (reset) begin
         if ( DIRECTION ) count <= 0;
         else count <= MAX;
-    end 
+    end
+
     else begin
 
-        if (enable) begin // yes we want to do things
+        // synchronous load
+        if ( load ) begin
+            count <= start_count;
+        end
 
-            if ( ~DIRECTION ) begin // direction == 0, count down
-                if (count == 0) count <= MAX;
-                else count <= count - 1;
-            end // ~direction
+        else begin 
 
-            else begin // direction == 1, counting up
-                if ( count == MAX ) count <= 0;
-                else count <= count + 1;
-            end // direction == 1
+            if (enable) begin // yes we want to do things
 
-        end // enable
+                if ( ~DIRECTION ) begin // direction == 0, count down
+                    if (count == 0) count <= MAX;
+                    else count <= count - 1;
+                end // ~direction
 
+                else begin // direction == 1, counting up
+                    if ( count == MAX ) count <= 0;
+                    else count <= count + 1;
+                end // direction == 1
+
+            end // enable
+        end // ~load
     end // ~reset
 end
 
