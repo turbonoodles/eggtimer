@@ -46,7 +46,7 @@ digit_counter seconds_ctr(
     .reset (reset),
     .start_count ( seconds_prog ),
     .count ( seconds ),
-    .zero_count ( seconds_zero )
+    .term_count ( seconds_zero )
 );
 
 initial begin
