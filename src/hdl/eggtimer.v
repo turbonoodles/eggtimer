@@ -122,6 +122,51 @@ time_count main_timer(
     .tens_minutes ( tens_minutes_count )
 );
 
+// individual counters for minutes and seconds to allow setting individually
+cooktime_count seconds_set(
+    .clk ( clk_5MHz ),
+    .button_in ( increment_seconds ),
+    .pulse_in ( pulse_300ms ),
+    .main_enable ( prog_mode ),
+    .reset ( reset ),
+    // set time outputs
+    .ones ( seconds_prog ),
+    .tens ( tens_seconds_prog )
+);
+
+cooktime_count minutes_set(
+    .clk ( clk_5MHz ),
+    .button_in ( increment_minutes ),
+    .pulse_in ( pulse_300ms ),
+    .main_enable ( prog_mode ),
+    .reset ( reset ),
+    // set time outputs
+    .ones ( minutes_prog ),
+    .tens ( tens_minutes_prog )
+);
+
+// main controller
+// - allow setting time when in time setting mode and holding button 
+// - load time from set counters when transistioning to countdown timer mode
+main_control controller(
+    .clk ( clk_5MHz),
+    .reset ( reset ),
+    .cooktime_req ( cooktime_req ), // debounced button
+    .start_timer ( start_btn ),
+    .seconds_req ( seconds_dbnce ),
+    .minutes_req ( minutes_dbnce ),
+    .timer_en ( timer_en ), // switch input
+    .timer_done ( timer_done ),
+
+    .increment_seconds ( increment_seconds ),
+    .increment_minutes ( increment_minutes ),
+    .prog_mode ( prog_mode ),
+    .timer_enabled_led ( timer_enabled_led ),
+    .timer_on_led ( timer_on_led ),
+    .main_timer_enable ( timer_on ),
+    .load_timer ( load_main_timer )
+);
+
 // display mux
 // display_prog will be high if we are displaying the set time
 assign seconds = display_prog? seconds_prog:seconds_count;

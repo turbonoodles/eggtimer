@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`timescale 1us / 1ns
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -25,7 +25,6 @@ module cooktime_tb();
 reg clk_10Hz;
 reg reset;
 reg enable;
-reg load;
 reg button;
 
 wire [3:0] ones;
@@ -57,8 +56,6 @@ initial begin
         button = 0;
         #500000;
     end
-
-    #10000000;
 
     $finish;
 end
