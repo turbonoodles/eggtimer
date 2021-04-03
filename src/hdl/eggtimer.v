@@ -21,7 +21,7 @@
 
 
 module eggtimer(
-    input wire timer_on,
+    input wire timer_en,
     input wire reset, // no need to debounce reset
     input wire cooktime_btn,
     input wire start_btn,
@@ -74,16 +74,13 @@ clock_divider timer_2ms(
     .pulse (pulse_2ms)
 );
 
-// this is a debouncer but it's really handling the delay to switch into
-// the cook-time setting mode
-wire cooktime_dbnce; // request to enter cook time mode
-defparam cooktime_debouncer.BOUNCE_DELAY = 3; // three second delay
+wire cooktime_req; // request to enter cook time mode
 debouncer cooktime_debouncer(
     .clk ( clk_5MHz ),
-    .enable ( pulse_1s ),
+    .enable ( pulse_10ms ),
     .button ( cooktime_btn ),
     .reset ( reset ),
-    .out ( cooktime_dbnce )
+    .out ( cooktime_req )
 );
 
 wire minutes_dbnce;
@@ -110,6 +107,7 @@ time_count main_timer(
     .reset (reset),
     .count_enable ( pulse_1s ),
     .main_enable ( timer_on ),
+    .load ( load_main_timer ),
     // cook time settings
     .seconds_prog ( seconds_prog ),
     .tens_seconds_prog ( tens_seconds_prog ),
@@ -168,16 +166,16 @@ main_control controller(
 );
 
 // display mux
-// display_prog will be high if we are displaying the set time
-assign seconds = display_prog? seconds_prog:seconds_count;
-assign tens_seconds = display_prog? tens_seconds_prog:tens_seconds_count;
-assign minutes = display_prog? minutes_prog:minutes_count;
-assign tens_minutes = display_prog? tens_minutes_prog:tens_minutes_count;
+// prog_mode will be high if we are displaying the set time
+assign seconds = prog_mode? seconds_prog:seconds_count;
+assign tens_seconds = prog_mode? tens_seconds_prog:tens_seconds_count;
+assign minutes = prog_mode? minutes_prog:minutes_count;
+assign tens_minutes = prog_mode? tens_minutes_prog:tens_minutes_count;
 
 // display instantiation
 quad_sevenseg display(
     .clk (clk_5MHz),
-    .clk (pulse_2ms),
+    .clk_enable (pulse_2ms),
     .digit0 ( seconds ),
     .digit1 ( tens_seconds ),
     .digit2 ( minutes ),
