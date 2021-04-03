@@ -45,10 +45,8 @@ module main_control(
 // blinky light for timer on LED
 reg flash;
 always @( posedge clk, posedge reset ) begin
-    if ( reset ) begin flash <= 0;
-    else begin
-        if ( led_pulse ) flash <= ~flash;
-    end
+    if ( reset ) flash <= 0;
+    else if ( led_pulse ) flash <= ~flash;
 end
 
 // main control state machine
@@ -108,6 +106,7 @@ always @ ( state ) begin
             main_timer_enable = 0;
             load_timer = 0;
         end
+    endcase
 end
 
 assign timer_enabled_led = main_timer_enable; // not programming or done
