@@ -32,7 +32,6 @@ reg [3:0] seconds_prog = 4;
 reg [3:0] tens_seconds_prog = 3;
 reg [3:0] minutes_prog = 2;
 reg [3:0] tens_minutes_prog = 1;
-
 // generate pulses every 1s for synchronous counters
 wire pulse_1s;
 defparam timer_1s.MAX_COUNT = 9;
@@ -59,7 +58,8 @@ time_count time_ctr(
     .seconds ( seconds_count ),
     .tens_seconds ( tens_seconds_count ),
     .minutes ( minutes_count ),
-    .tens_minutes ( tens_minutes_count )
+    .tens_minutes ( tens_minutes_count ),
+    .done ( done )
 );
 
 /// testbench stuff

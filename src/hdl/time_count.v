@@ -35,7 +35,8 @@ module time_count(
     output wire [3:0] seconds,
     output wire [3:0] tens_seconds,
     output wire [3:0] minutes,
-    output wire [3:0] tens_minutes
+    output wire [3:0] tens_minutes,
+    output wire done
     );
 
 parameter TIMER_DIRECTION = 1'b0;
@@ -95,5 +96,7 @@ digit_counter tens_minutes_ctr(
     .count ( tens_minutes ),
     .term_count ( tens_minutes_zero )
 );
+
+assign done = seconds_zero & tens_seconds_zero & minutes_zero & tens_minutes_zero; 
 
 endmodule
