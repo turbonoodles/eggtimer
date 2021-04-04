@@ -36,9 +36,9 @@ module main_control(
         output wire increment_seconds,
         output wire increment_minutes,
         output reg prog_mode, // allow counting in the setting counters
-        output reg timer_enabled_led, // solid light
+        output wire timer_enabled_led, // solid light
         output wire timer_on_led, // blinky light
-        output wire main_timer_enable, // allow counter in the main timer
+        output reg main_timer_enable, // allow counter in the main timer
         output reg load_timer // load the main timer with the values on the setting ctrs
     );
 
@@ -50,10 +50,10 @@ always @( posedge clk, posedge reset ) begin
 end
 
 // main control state machine
-parameter PROG = 2'b1;
-parameter TIMER = 2'b0;
-parameter DONE = 2'b2;
-parameter LOAD = 2'b3;
+parameter PROG = 2'b01;
+parameter TIMER = 2'b00;
+parameter DONE = 2'b10;
+parameter LOAD = 2'b11;
 reg [2:0] state, next_state;
 
 // basic machine drive
