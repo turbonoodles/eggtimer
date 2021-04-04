@@ -25,7 +25,7 @@ module debouncer(
     input wire clk,
     input wire enable,
     input wire reset,
-    output wire out
+    output reg out
     );
 
 // this parameter will decide how long our button needs to be constant
@@ -42,14 +42,12 @@ always @( posedge clk, posedge reset ) begin
     if ( reset ) bouncer <= 0; // clear everyone
     else begin
         
-        if ( enable ) bouncer <= { bouncer[BOUNCE_DELAY-1:1], button };
-
+        if ( enable ) begin
+           bouncer <= { bouncer[BOUNCE_DELAY-2:0], button };
+           out <= &bouncer;
+        end
     end
     
 end
-
-// only go high if we've got agreement
-// for an active-high button, that means everyone's 1
-assign out = &bouncer;
 
 endmodule
