@@ -68,10 +68,10 @@ clock_divider timer_2ms(
 wire pulse_10ms;
 defparam timer_10ms.MAX_COUNT = 10000;
 defparam timer_10ms.CTR_WIDTH = 14; // 2^14 = 16 384
-clock_divider timer_2ms(
+clock_divider timer_10ms(
     .clk (clk_5MHz),
     .reset (reset),
-    .pulse (pulse_2ms)
+    .pulse (pulse_10ms)
 );
 
 wire cooktime_req; // request to enter cook time mode
