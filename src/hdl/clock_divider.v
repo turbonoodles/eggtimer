@@ -23,7 +23,7 @@
 module clock_divider(
     input wire clk,
     input wire reset,
-    output wire pulse // 1-clk long pulse every whateverlong
+    output reg pulse // 1-clk long pulse every whateverlong
     );
 
 parameter MAX_COUNT = 5000000;
@@ -36,12 +36,15 @@ always @( negedge clk, posedge reset ) begin
     if ( reset ) count <= MAX_COUNT;
     
     else begin
-        if ( count == 0 ) count <= MAX_COUNT;
-        else count <= count - 1;
+        if ( count == 0 ) begin
+            count <= MAX_COUNT;
+            pulse <= 1;
+        end
+        else begin
+            count <= count - 1;
+            pulse <= 0;
+        end
     end
 end
-
-// output pulse
-assign pulse = ( count == 0 ); // this probably synthesizes to ~|count?
 
 endmodule
