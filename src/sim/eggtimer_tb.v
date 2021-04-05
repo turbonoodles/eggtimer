@@ -230,9 +230,31 @@ initial begin
     start_btn = 1;
     #20000;
     start_btn = 0;
-    #20000;
+    #2000000; // miss at least one pulse before we start counting down
     timer_en = 1;
-    #100000000;
+    #250000000;
+
+    // restart: should reload the time from the program counters and go again
+    start_btn = 1;
+    #20000;
+    start_btn = 0;
+    #125000000;
+    timer_en = 0;
+    #10000000; // pause timer for 10s
+    timer_en = 1;
+    #125000000;
+
+    start_btn = 1;
+    #20000;
+    start_btn = 0;
+    #20000000; // 20s
+    cooktime_btn = 1; // test timer->cooktime transition
+    #20000;
+    cooktime_btn = 0;
+    #1000000;
+    start_btn = 1; // back into timer; count immediately
+    #20000; 
+    start_btn = 0;
 
     $finish;
     
