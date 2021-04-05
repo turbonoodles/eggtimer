@@ -57,26 +57,28 @@ end
 
 // main counters
 wire ones_enable, ones_max;
-assign ones_enable = increment & main_enable;
+//assign ones_enable = increment & main_enable;
 defparam ones_ctr.MAX = 9;
 defparam ones_ctr.DIRECTION = TIMER_DIRECTION; // countdown
 digit_counter ones_ctr(
     .clk ( clk ),
-    .enable ( ones_enable ),
+    .enable ( increment & main_enable ),
     .reset (reset),
+    .load ( 0 ),
     .start_count ( 0 ),
     .count ( ones ),
     .term_count ( ones_max )
 );
 
 wire tens_enable, tens_max;
-assign tens_enable = increment & ones_max & main_enable;
+//assign tens_enable = increment & ones_max & main_enable;
 defparam tens_ctr.MAX = 5;
 defparam tens_ctr.DIRECTION = TIMER_DIRECTION;
 digit_counter tens_ctr(
     .clk ( clk ),
-    .enable ( tens_enable ),
+    .enable (  increment & ones_max & main_enable ),
     .reset (reset),
+    .load ( 0 ),
     .start_count ( 0 ),
     .count ( tens ),
     .term_count ( tens_max )

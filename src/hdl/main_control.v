@@ -23,7 +23,6 @@
 module main_control(
         // control inputs
         input wire clk,
-        input wire led_pulse,
         input wire reset, 
         input wire cooktime_req, // cook time button/holdy button = switch
         input wire start_timer, // timer start button
@@ -46,7 +45,7 @@ module main_control(
 reg flash;
 always @( posedge clk, posedge reset ) begin
     if ( reset ) flash <= 0;
-    else if ( led_pulse ) flash <= ~flash;
+    else if ( main_timer_enable ) flash <= ~flash;
 end
 
 // main control state machine
@@ -80,11 +79,12 @@ always @( state, cooktime_req, start_timer, timer_done ) begin
             else next_state = TIMER;
         end 
         LOAD: next_state = TIMER; // load the timer with a setting
+        default: next_state = DONE;
     endcase
 end
 
 // output decoding
-always @ ( state ) begin
+always @ ( state, timer_en ) begin
     case ( state )
         PROG: begin
             prog_mode = 1;
@@ -93,7 +93,7 @@ always @ ( state ) begin
         end
         TIMER: begin
             prog_mode = 0;
-            main_timer_enable = 1;
+            main_timer_enable = timer_en;
             load_timer = 0;
         end 
         LOAD: begin
@@ -102,6 +102,11 @@ always @ ( state ) begin
             load_timer = 1;
         end
         DONE: begin
+            prog_mode = 0;
+            main_timer_enable = 0;
+            load_timer = 0;
+        end
+        default: begin
             prog_mode = 0;
             main_timer_enable = 0;
             load_timer = 0;

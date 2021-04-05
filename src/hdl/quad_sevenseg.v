@@ -74,7 +74,7 @@ always @(state, digit0, digit1, digit2, digit3) begin
         end
         default: begin
             next_state <= 0; // trap broken state
-            display_digit <= 6'b0001110; // F to pay respects
+            display_digit <= 7'b0001110; // F to pay respects
         end
     endcase
 end

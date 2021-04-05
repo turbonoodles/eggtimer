@@ -57,7 +57,7 @@ clock_divider timer_1s(
 // 2ms clock enable signal for 500Hz display refresh
 wire pulse_2ms;
 defparam timer_2ms.MAX_COUNT = 2000;
-defparam timer_2ms.CTR_WIDTH = 11; // 2^11 = 2048
+defparam timer_2ms.CTR_WIDTH = 12; // 2^11 = 2048
 clock_divider timer_2ms(
     .clk (clk_5MHz),
     .reset (reset),
@@ -102,6 +102,7 @@ debouncer seconds_debouncer(
 );
 
 wire [3:0] seconds_count, tens_seconds_count, minutes_count, tens_minutes_count;
+wire [3:0] seconds_prog, tens_seconds_prog, minutes_prog, tens_minutes_prog;
 time_count main_timer(
     .clk (clk_5MHz),
     .reset (reset),
@@ -117,14 +118,14 @@ time_count main_timer(
     .seconds ( seconds_count ),
     .tens_seconds ( tens_seconds_count ),
     .minutes ( minutes_count ),
-    .tens_minutes ( tens_minutes_count )
+    .tens_minutes ( tens_minutes_count ),
+    .done ( timer_done )
 );
 
 // individual counters for minutes and seconds to allow setting individually
 cooktime_count seconds_set(
     .clk ( clk_5MHz ),
     .button_in ( increment_seconds ),
-    .pulse_in ( pulse_300ms ),
     .main_enable ( prog_mode ),
     .reset ( reset ),
     // set time outputs
@@ -135,7 +136,6 @@ cooktime_count seconds_set(
 cooktime_count minutes_set(
     .clk ( clk_5MHz ),
     .button_in ( increment_minutes ),
-    .pulse_in ( pulse_300ms ),
     .main_enable ( prog_mode ),
     .reset ( reset ),
     // set time outputs
@@ -167,6 +167,7 @@ main_control controller(
 
 // display mux
 // prog_mode will be high if we are displaying the set time
+wire [3:0] seconds, tens_seconds, minutes, tens_minutes;
 assign seconds = prog_mode? seconds_prog:seconds_count;
 assign tens_seconds = prog_mode? tens_seconds_prog:tens_seconds_count;
 assign minutes = prog_mode? minutes_prog:minutes_count;
