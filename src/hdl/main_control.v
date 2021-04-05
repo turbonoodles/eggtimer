@@ -30,7 +30,7 @@ module main_control(
         input wire timer_done, // timer has reached zero
         input wire seconds_req, // user seconds increment request
         input wire minutes_req, // ditto for minutes
-
+        input wire blink_pulse, // timing for the blinky light
         // control outputs
         output wire increment_seconds,
         output wire increment_minutes,
@@ -45,7 +45,9 @@ module main_control(
 reg flash;
 always @( posedge clk, posedge reset ) begin
     if ( reset ) flash <= 0;
-    else if ( main_timer_enable ) flash <= ~flash;
+    else begin
+        if ( blink_pulse ) flash <= ~flash;
+    end
 end
 
 // main control state machine

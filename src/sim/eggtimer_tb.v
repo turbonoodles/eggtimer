@@ -127,6 +127,7 @@ main_control controller(
     .minutes_req ( minutes_dbnce ),
     .timer_en ( timer_en ), // switch input
     .timer_done ( timer_done ),
+    .blink_pulse ( pulse_1s ),
 
     .increment_seconds ( increment_seconds ),
     .increment_minutes ( increment_minutes ),
