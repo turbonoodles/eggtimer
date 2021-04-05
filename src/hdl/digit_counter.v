@@ -38,10 +38,7 @@ assign term_count = DIRECTION? ( count == MAX ):( count == 0 );
 always @(posedge clk, posedge reset) begin
     
     // asynchronous reset
-    if (reset) begin
-        if ( DIRECTION ) count <= 0;
-        else count <= MAX;
-    end
+    if (reset) count <= 0;
 
     else begin
 

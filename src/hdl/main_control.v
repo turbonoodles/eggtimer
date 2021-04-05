@@ -93,7 +93,7 @@ always @ ( state, timer_en ) begin
         end
         TIMER: begin
             prog_mode = 0;
-            main_timer_enable = timer_en;
+            main_timer_enable = 1;
             load_timer = 0;
         end 
         LOAD: begin
