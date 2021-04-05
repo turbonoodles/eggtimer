@@ -33,7 +33,10 @@ reg [CTR_WIDTH-1:0] count;
 
 always @( negedge clk, posedge reset ) begin
 
-    if ( reset ) count <= MAX_COUNT;
+    if ( reset ) begin
+        count <= MAX_COUNT;
+        pulse <= 0;
+    end
     
     else begin
         if ( count == 0 ) begin

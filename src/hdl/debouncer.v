@@ -39,7 +39,11 @@ reg [BOUNCE_DELAY - 1:0] bouncer;
 // basically a shift register where we want to take a poll of the outputs
 always @( posedge clk, posedge reset ) begin
 
-    if ( reset ) bouncer <= 0; // clear everyone
+    if ( reset ) begin
+        bouncer <= 0; // clear everyone
+        out <= 0;
+    end
+    
     else begin
         
         if ( enable ) begin
