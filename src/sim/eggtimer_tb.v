@@ -13,6 +13,7 @@ wire [6:0] display_cathodes;
 wire [7:0] display_anodes;
 wire timer_enabled_led;
 wire timer_on_led;
+wire [7:0] output_leds;
 
 reg [31:0] i; // testbench index thing
 
@@ -115,6 +116,38 @@ cooktime_count minutes_set(
     .tens ( tens_minutes_prog )
 );
 
+// conversion of all time to seconds for the bar graph
+wire [11:0] prog_seconds;
+seconds_converter prog_sec_conv(
+    .clk ( clk_1kHz ),
+    .load ( load_main_timer ),
+    .reset ( reset ),
+    .tens_minutes ( tens_minutes_prog ),
+    .minutes ( minutes_prog ),
+    .tens_seconds ( tens_seconds_prog ),
+    .seconds ( seconds_prog ),
+    .seconds_out ( prog_seconds )
+);
+
+wire [11:0] count_seconds;
+seconds_converter timer_sec_conv(
+    .clk ( clk_1kHz ),
+    .load ( timer_on ), // continuous conversion while timer is on
+    .reset ( reset ),
+    .tens_minutes ( tens_minutes_count ),
+    .minutes ( minutes_count ),
+    .tens_seconds ( tens_seconds_count ),
+    .seconds ( seconds_count ),
+    .seconds_out ( count_seconds )
+);
+
+wire [7:0] bargraph_leds;
+bargraph bg(
+    .prog_seconds ( prog_seconds ),
+    .timer_seconds ( count_seconds ),
+    .led ( bargraph_leds )
+);
+
 // main controller
 // - allow setting time when in time setting mode and holding button 
 // - load time from set counters when transistioning to countdown timer mode
@@ -128,6 +161,7 @@ main_control controller(
     .timer_en ( timer_en ), // switch input
     .timer_done ( timer_done ),
     .blink_pulse ( pulse_1s ),
+    .bargraph ( bargraph_leds ),
 
     .increment_seconds ( increment_seconds ),
     .increment_minutes ( increment_minutes ),
@@ -135,7 +169,8 @@ main_control controller(
     .timer_enabled_led ( timer_enabled_led ),
     .timer_on_led ( timer_on_led ),
     .main_timer_enable ( timer_on ),
-    .load_timer ( load_main_timer )
+    .load_timer ( load_main_timer ),
+    .output_leds ( output_leds )
 );
 
 // display mux

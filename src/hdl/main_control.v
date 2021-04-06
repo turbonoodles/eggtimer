@@ -31,6 +31,7 @@ module main_control(
         input wire seconds_req, // user seconds increment request
         input wire minutes_req, // ditto for minutes
         input wire blink_pulse, // timing for the blinky light
+        input wire [7:0] bargraph,
         // control outputs
         output wire increment_seconds,
         output wire increment_minutes,
@@ -38,7 +39,8 @@ module main_control(
         output wire timer_enabled_led, // solid light
         output wire timer_on_led, // blinky light
         output reg main_timer_enable, // allow counter in the main timer
-        output reg load_timer // load the main timer with the values on the setting ctrs
+        output reg load_timer, // load the main timer with the values on the setting ctrs
+        output reg [7:0] output_leds // eight blinking/bargraph lights
     );
 
 // blinky light for timer on LED
@@ -86,32 +88,37 @@ always @( state, cooktime_req, start_timer, timer_done ) begin
 end
 
 // output decoding
-always @ ( state, timer_en ) begin
+always @ ( state, timer_en, bargraph, flash ) begin
     case ( state )
         PROG: begin
             prog_mode = 1;
             main_timer_enable = 0;
             load_timer = 0;
+            output_leds = 0;
         end
         TIMER: begin
             prog_mode = 0;
             main_timer_enable = timer_en;
             load_timer = 0;
+            output_leds = bargraph;
         end 
         LOAD: begin
             prog_mode = 0;
             main_timer_enable = 0;
             load_timer = 1;
+            output_leds = 0;
         end
         DONE: begin
             prog_mode = 0;
             main_timer_enable = 0;
             load_timer = 0;
+            output_leds = {8{flash}};
         end
         default: begin
             prog_mode = 0;
             main_timer_enable = 0;
             load_timer = 0;
+            output_leds = 0;
         end
     endcase
 end
