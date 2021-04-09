@@ -53,21 +53,26 @@ always @( posedge clk, posedge reset ) begin
 end
 
 // main control state machine
-parameter PROG = 2'b01;
-parameter TIMER = 2'b00;
-parameter DONE = 2'b10;
-parameter LOAD = 2'b11;
-reg [2:0] state, next_state;
+parameter PROG = 3'b001;
+parameter TIMER = 3'b100;
+parameter DONE = 3'b010;
+parameter LOAD = 3'b011;
+parameter RESET = 3'b000;
+reg [3:0] state, next_state;
 
 // basic machine drive
 always @( posedge clk, posedge reset ) begin
-    if ( reset ) state <= TIMER;
+    if ( reset ) state <= RESET;
     else state <= next_state;
 end
 
 // next state calculations
 always @( state, cooktime_req, start_timer, timer_done ) begin
     case ( state )
+        RESET: begin
+            if ( cooktime_req ) next_state = PROG;
+            else next_state = RESET;
+        end
         PROG: begin // time setting mode
             if ( start_timer ) next_state = LOAD;
             else next_state = PROG;
@@ -90,6 +95,12 @@ end
 // output decoding
 always @ ( state, timer_en, bargraph, flash ) begin
     case ( state )
+        RESET: begin
+            prog_mode = 0;
+            main_timer_enable = 0;
+            load_timer = 0;
+            output_leds = 0;
+        end
         PROG: begin
             prog_mode = 1;
             main_timer_enable = 0;
